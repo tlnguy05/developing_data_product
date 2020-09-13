@@ -1,0 +1,12 @@
+name: covid
+title: covid
+username:
+account: nguyenlehoangtuan
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2797422
+bundleId: 3622555
+url: https://nguyenlehoangtuan.shinyapps.io/covid/
+when: 1599935078.7345
+asMultiple: FALSE
+asStatic: FALSE
