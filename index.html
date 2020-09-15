@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DEVELOPING DATA PRODUCT</title>
+  <meta name="description" content="">
+  <meta name="author" content="TUAN NGUYEN">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="libraries/frameworks/revealjs/css/reveal.min.css">
+  <link rel="stylesheet" href="libraries/frameworks/revealjs/css/theme/default.css" id="theme">
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" id="theme">
+  <!--[if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <![endif]-->  
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section class='' data-state='' id='slide-1'>
+  
+  <style>
+.reveal h1 {
+    font-size: 2em;
+    // color: #0000b3;
+    padding-bottom: 10px;
+    font-family: 'Permanent Marker', Impact, sans-serif;
+}
+
+.reveal h2 {
+    font-size: 1.2em;
+    color: ##ffa500;
+    padding-bottom: 10px;
+    font-family: 'Permanent Marker', Impact, sans-serif;
+}
+
+
+.reveal p, .reveal em {
+    padding-bottom: 10px;
+    width: 960px;
+    font-family: 'Open Sans', Verdana, sans-serif;
+}
+
+.reveal p {
+    font-size: .75em;
+}
+
+.reveal small {
+    width: 500px;
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal .roll {
+    vertical-align: text-bottom;
+}
+
+code {
+    color: red;
+}
+
+.reveal pre code { 
+     height: 250px;
+}
+
+.reveal .tab {
+margin-left: 40px;
+}
+
+</style>
+
+<h2><h1>Developing Data Products</h1></h2>
+
+<h2>Course Project: <a href="https://nguyenlehoangtuan.shinyapps.io/covid/">COVID-19 USA DASHBOARD</a></h2>
+
+<p>Student : TUAN NGUYEN</p>
+
+<p><center>
+<em>&quot;Tracking Covid-19 Cases in the United States&quot;</em>
+</center></p>
+
+  
+</section>
+<section class='class' data-state='' id='id'>
+  <h2>THE PROJECT ASSIGNMENT</h2>
+  <p>This project aims to build:  </p>
+
+<p align = "justify"; class = "tab">1. <a style="color:yellow;"><b>A shiny application</b></a> that has some forms of widget inputs, operations on the ui input in <b>sever.R</b>, reactive outputs displayed as a result of server calculations and support documentations.</p>
+
+<p align = "justify"; class = "tab">2. <a style="color:yellow;"><b>A reproducible pitch presentation</b></a> that contains five slides with embedded R codes, prepared in either Slidify or Rstudio Repsenter and then pushed to github or Rpubs.</p>
+
+<p > Links to the project's shiny application & documentations:
+<p class = "tab"><a href="https://nguyenlehoangtuan.shinyapps.io/covid/">- Shiny application</a></p> 
+
+<p class = "tab"><a href="https://github.com/tlnguy05/developing_data_product/tree/gh-pages/covid">- Documentations</a></p>   
+
+  
+</section>
+<section class='' data-state='' id='slide-3'>
+  <h2>THE COVID-19 DATA</h2>
+  <p align = "justify">The data are scraped directly from <a href="www.worldometers.info/coronavirus/country/us/">Worldometers</a>, making sure our Shiny application's data are always up-to-date.</p>
+
+<p><em align = "justify">Note: When there are a lot of NAs in a specific column, it means the data for that column is being updated</em></p>
+
+<pre><code class="r">library(rvest)
+fileurl &lt;- &quot;https://www.worldometers.info/coronavirus/country/us/&quot;
+data &lt;- fileurl %&gt;% read_html() %&gt;% 
+        html_nodes(xpath = &#39;//*[@id=&quot;usa_table_countries_today&quot;]&#39;) %&gt;%
+        html_table(fill = TRUE)
+data &lt;- data[[1]]
+covidUSA_temp &lt;- data[,c(-1, -14, -15)]
+str(covidUSA_temp)
+</code></pre>
+
+<pre><code>&#39;data.frame&#39;:   64 obs. of  12 variables:
+ $ USAState        : chr  &quot;USA Total&quot; &quot;California&quot; &quot;Texas&quot; &quot;Florida&quot; ...
+ $ TotalCases      : chr  &quot;6,749,289&quot; &quot;765,779&quot; &quot;697,735&quot; &quot;665,730&quot; ...
+ $ NewCases        : logi  NA NA NA NA NA NA ...
+ $ TotalDeaths     : chr  &quot;199,000&quot; &quot;14,462&quot; &quot;14,582&quot; &quot;12,649&quot; ...
+ $ NewDeaths       : logi  NA NA NA NA NA NA ...
+ $ TotalRecovered  : chr  &quot;4,027,826&quot; &quot;378,323&quot; &quot;600,046&quot; &quot;154,588&quot; ...
+ $ ActiveCases     : chr  &quot;2,522,463&quot; &quot;372,994&quot; &quot;83,107&quot; &quot;498,493&quot; ...
+ $ Tot Cases/1M pop: chr  &quot;20,390&quot; &quot;19,381&quot; &quot;24,063&quot; &quot;30,996&quot; ...
+ $ Deaths/1M pop   : chr  &quot;601&quot; &quot;366&quot; &quot;503&quot; &quot;589&quot; ...
+ $ TotalTests      : chr  &quot;93,242,920&quot; &quot;12,806,189&quot; &quot;5,989,638&quot; &quot;4,948,075&quot; ...
+ $ Tests/1M pop    : chr  &quot;281,698&quot; &quot;324,107&quot; &quot;206,569&quot; &quot;230,382&quot; ...
+ $ Population      : chr  &quot;&quot; &quot;39,512,223&quot; &quot;28,995,881&quot; &quot;21,477,737&quot; ...
+</code></pre>
+
+  
+</section>
+<section class='' data-state='' id='slide-4'>
+  <h2>THE COVID-19 USA DASHBOARD</h2>
+  <h4> MAKE SELECTIONS TO GET THE INSIGHTS.</h4>
+
+<p>Use the reactive input panel on the Analysis tab to select the analysis you wish to make:</p>
+
+<p align = "justify"; class = "tab">- To the extent of this assignment, these analysis are limited to Total Cases, Total Deaths, New Cases, New Deaths and Total Recovered across the United States.</p>
+
+<p align = "justify"; class = "tab">- Select the number of ranked states that will display the list of top states for each analysis option.</p>
+
+<p align = "justify"; class = "tab">- After making selections, click on the <b>ANALYSIS</b> button and the server will calculate to extract the data insights.</p>  
+
+<p >From the main panel on the Analysis tab, hover on the graphs to see more insights.</p>  
+
+<p >Switch to the Data tab to see how the filters control and subset data. Click on the <b>Download</b> button to download the csv file. </p>  
+
+  
+</section>
+<section class='' data-state='' id='slide-5'>
+  <h2>FUTURE DEVELOPMENT</h2>
+  <p align = "justify">My vision is to incorporate more analyses to the dashboard, delivering more insights to users. i.e gender analysis, ethnicity analysis, predictions... </p>
+
+<p align = "justify">Scraping data directly from websites is a temporary solution that is inefficient when dealing with large databases. Our solution is to develop a robust backend infrastructure to store and automatically update the data. This could be done by using R markdown with Rstudio Connect.</p>
+
+  
+</section>
+    </div>
+  </div>
+</body>
+  <script src="libraries/frameworks/revealjs/lib/js/head.min.js"></script>
+  <script src="libraries/frameworks/revealjs/js/reveal.min.js"></script>
+  <script>
+  // Full list of configuration options available here:
+  // https://github.com/hakimel/reveal.js#configuration
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    theme: Reveal.getQueryHash().theme || 'default', 
+    transition: Reveal.getQueryHash().transition || 'default', 
+    dependencies: [
+    // Cross-browser shim that fully implements classList -
+    // https://github.com/eligrey/classList.js/
+      { src: 'libraries/frameworks/revealjs/lib/js/classList.js', condition: function() { return !document.body.classList;}},
+      // Zoom in and out with Alt+click
+      { src: 'libraries/frameworks/revealjs/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      // Speaker notes
+      { src: 'libraries/frameworks/revealjs/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+      // Remote control your reveal.js presentation using a touch device
+      //{ src: 'libraries/frameworks/revealjs/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+      ]
+  });
+  </script>  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script> -->
+
+<script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+ 
+
+</html>
