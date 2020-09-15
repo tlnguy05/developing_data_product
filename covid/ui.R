@@ -22,6 +22,7 @@ require(plotly)
 require(ggplot2)
 require(dplyr)
 require(lubridate)
+require(DT)
 
 # Adjustment
 h3.align <- "center"
@@ -58,17 +59,23 @@ shinyUI(navbarPage(
             h3("Interactive Panel", align = h3.align),
             h6("Select options and click the ANALYSIS button", 
                align = "center"),
+            
             selectInput(
                 "select1",
-                "Please select the data",
-                c("Today", "Yesterday")
-            ),
-            selectInput(
-                "select2",
                 "Please select the analysis",
                 c("Total Cases", "Total Deaths", "New Cases", "New Deaths", 
                   "Total Recovered", "Active Cases", "Total Tests"),
                 selected = "Total Cases"),
+            
+            sliderInput(
+                "slider1",
+                "Please select the number of ranked states",
+                min = 1,
+                max = 50,
+                value = 10
+                
+            ),
+            
             fluidRow(
                 column(3),
                 column(3,submitButton("ANALYSIS"))
@@ -85,7 +92,7 @@ shinyUI(navbarPage(
                     
                     fluidRow(
                         column(12, offset = 0, h3("DISTRIBUTION OF COVID CASES ACROSS THE USA", align="center"),
-                               h4("Hover over the state to view", align="center"),
+                               h4("Hover over each  state to view", align="center"),
                                plotlyOutput("plot1")
                                 )
                 
@@ -106,32 +113,32 @@ shinyUI(navbarPage(
                         )
                         ),
                         
-                         column(8, h3("TOP 10 STATES", align = "center"),plotlyOutput("plot2", height = 300))
+                         column(8, h3("TOP RANKED STATES", align = "center"),plotlyOutput("plot2", height = 300))
                         
                         )
                     
                          ),
                 
-                # Today data tab
+                # Summarized data tab
                 tabPanel(
-                    p(icon("table"), "Today Data"),
+                    p(icon("table"), "Summarized Data"),
                     
                     fluidRow(
                         column(6, h3("Search, Filter & Download Data", align='left')),
-                        column(6, downloadButton('downloadData1', 'Download', class="pull-right"))
+                        column(6, downloadButton('downloadData', 'Download', class="pull-right"))
                         
                     ),
                     hr(),
                     fluidRow(
                         dataTableOutput(outputId="table")
                         
-                    ))
+                    ))# End of data tab
         
     ))), #End of Analytics tab panel
     
     #About tab panel
     tabPanel("Supporting Docs",
-             mainPanel("haha"
+             mainPanel(column(12, offset = 2, includeMarkdown("documentation.Rmd"))
              )
     ) # End About Tab Panel   
     
